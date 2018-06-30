@@ -21,7 +21,7 @@ function tubular2DReactor
 %   Author: ataide@peq.coppe.ufrj.br
 %   Contact me for help/personal classes!
 
-%% The parameters
+%% Problem setup
 % Reactor dimensions
 R = 0.1; L = 10;
 

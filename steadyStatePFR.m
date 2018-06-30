@@ -11,7 +11,7 @@ function steadyStatePFR
 %   Algebraic Constraints:
 %   Ft = sum(F_i)
 %   C_i = P/(R*T)*F_i/Ft
-%   u = Ft/sum(C_i)
+%   u*sum(C_i) = Ft
 % 
 %   Auxiliar equations
 %   cp*Ft = sum(F_i*cp_i)
@@ -107,7 +107,7 @@ ylabel('Velocity')
         res(6,1) = Ca - P/R/T*Fa/Ft;
         res(7,1) = Cb - P/R/T*Fb/Ft;
         res(8,1) = Cc - P/R/T*Fc/Ft;
-        res(9,1) = u - Ft/(Ca+Cb+Cc);
+        res(9,1) = u*(Ca+Cb+Cc) - Ft;
         
         
     end

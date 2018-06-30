@@ -12,7 +12,7 @@ function reactionDiffusion
 %   Author: ataide@peq.coppe.ufrj.br
 %   Contact me for help/personal classes!
 
-%% Problem Initialization
+%% Problem setup
 
 % Grid Points
 n = 5000;
