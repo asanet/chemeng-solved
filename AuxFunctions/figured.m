@@ -1,10 +1,15 @@
-function f = figured(int)
+function f = figured(varargin)
+%FIGURED Customized figure and axes for plotting and with alternative
+%        save2pdf command.
+%   
+%   Pretty much the same usage of figure() command.
+% 
+%   ============================================================
+%   Author: ataide@peq.coppe.ufrj.br
+%   homepage: github.com/asanet
+%   Contact me for help/personal classes!
 
-if nargin == 1
-    f = figure(int);
-else
-    f = figure;
-end
+f = figure(varargin{:});
 
 set(f,'Units','normalized','PaperOrientation','landscape','PaperPositionMode','auto',...
                                         'Tag','main','Position',[0.3 0.25 0.4 0.5]); 
@@ -32,6 +37,7 @@ end
 end
 
 function save2pdflocal(pdfFileName,dpi,handle)
+% Addapted from (c) Gabe Hoffmann, gabe.hoffmann@gmail.com
 
 % Backup previous settings
 prePaperType = get(handle,'PaperType');

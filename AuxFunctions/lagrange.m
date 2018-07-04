@@ -1,4 +1,16 @@
-function Pl = lagrange(xg,yg,x)
+function P = lagrange(xg,yg,x)
+%LAGRANGE Gives the lagrange interpolator polynomial.
+%
+%   P = LAGRANGE(XG,YG,X) Calculates the polynomial P in X with the nodal
+%   points given in XG and coefficients in YG. XG and YG must be of the
+%   same size.
+% 
+%   Examples:See the Furnace_wall.m file.
+% 
+%   ============================================================
+%   Author: ataide@peq.coppe.ufrj.br
+%   homepage: github.com/asanet
+%   Contact me for help/personal classes!
 
 % Error handling
 if length(xg) ~= length(yg)
@@ -13,7 +25,7 @@ np = length(x);
 ng = length(xg);
 
 % Allocation
-Pl = zeros(np,1);
+P = zeros(np,1);
 
 % Calculate the lagrange polinomial in x -> P(x)
 for j = 1:ng
@@ -23,6 +35,6 @@ for j = 1:ng
             l = l.*( x - xg(i) )/( xg(j) - xg(i) );
         end
     end
-    Pl = Pl + l*yg(j);
+    P = P + l*yg(j);
 end
         

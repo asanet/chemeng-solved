@@ -1,8 +1,35 @@
 function [A,B,xgrid] = collocation(n,var,extrax)
-% Output: Grid points and derivative matrixes
+%COLLOCATION Calculates the first and second derivatives of the Lagrange
+%            interpolator at the roots of the Legendre orthogonal
+%            polynomial.
+%
+%   [A,B,XGRID] = COLLOCATION(N,VAR,EXTRAX) N is the number of roots of the
+%   orthogonal polynomial (usually the inner points of a discretization).
+%   VAR is a string with the independent variable. Ex: with VAR = 'x', we 
+%   are calculating the roots xi in [-1, 1] such as P(x) = 0.
+%   With VAR = '2*x-1', we are calculating the roots xi i [0, 1] such as 
+%   P(2x-1) = 0. EXTRAX is a 2-by-1 optional vector which pre-append and
+%   post-append xgrig by EXTRAX(1) and EXTRAX(2), respectively.
+% 
+%   Examples:See the Furnace_wall.m file.
+% 
+%   ============================================================
+%   Author: ataide@peq.coppe.ufrj.br
+%   homepage: github.com/asanet
+%   Contact me for help/personal classes!
 
 if nargin < 3
     extrax = [];
+elseif nargin < 2
+    var = 'x';
+    extrax = [];
+elseif nargin < 1
+    error('Missing the number of roots.')
+end
+
+if n < 1
+    n = 1;
+    warning('Minimum value for n is 1')
 end
 
 if ~ischar(var) || ~any(var == 'x')
