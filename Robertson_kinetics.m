@@ -20,6 +20,7 @@ function Robertson_kinetics
 % 
 %   ============================================================
 %   Author: ataide@peq.coppe.ufrj.br
+%   homepage: github.com/asanet
 %   Contact me for help/personal classes!
 
 %% Problem setting

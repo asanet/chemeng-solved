@@ -26,6 +26,7 @@ function Tubular_reactor_2D
 %
 %   ============================================================
 %   Author: ataide@peq.coppe.ufrj.br
+%   homepage: github.com/asanet
 %   Contact me for help/personal classes!
 
 %% Problem setup
