@@ -40,7 +40,7 @@ function Furnace_Wall
 addpath('AuxFunctions')
 
 % Parameters
-kA = 247*3600;  kB = 398*3600;
+kA = 50*3600;  kB = 398*3600;
 cpA = 900;      cpB = 386;
 rhoA = 2697;    rhoB = 8920;
 LA = 1;         LB = 1.5;
@@ -53,25 +53,42 @@ N = 5;
 % Total points
 n = N + 2;
 
-% Grid and matrixes
+% Grid and matrices
 [M1,M2,xgrid] = collocation(N,'2*x-1',[0 1]);
 xB = LB*xgrid;
 xA = sort(-LA*xgrid);
 
 % Initial condition
-y0 = 298*ones(2*n,1);
+y0 = 298.15*ones(2*n,1);
 yp0 = model(0,y0,zeros(2*n,1));
 
 tf = 20;
-frames = 500;
-tspan = linspace(0,tf,frames);
+frames = 900 + 100;
+tspan = [ linspace(0, tf/10, 900) linspace( tf/10+0.1, tf, 100)];
 [t,y] = ode15i(@model,tspan,y0,yp0);
 
+% Solution at the collocation points
 TAs = y(:,1:n); TBs = y(:,n+1:2*n);
+
+% Refined grid
+ref = 100;
+xAc = linspace(-LA,0,ref);
+xBc = linspace(0,LB,ref);
+
+% Lagrange polynomial
+TAc = zeros(frames,ref);
+TBc = zeros(frames,ref);
+
+labels = cell(frames,1);
+for i = 1:frames
+    TAc(i,:) = lagrange(xA,TAs(i,:),xAc);
+    TBc(i,:) = lagrange(xB,TBs(i,:),xBc);
+    labels{i} = sprintf('Temperature profile in t = %2.4f h',t(i));
+end
 
 % Plot data
 close all
-figured;
+figured(1);
 h = plot(t,TAs(:,1:n-1),'b',t,TAs(:,n),'g',t,TBs(:,2:end),'r');
 set(h,'LineWidth',1.5)
 set(h([2:n-1 n+2:2*n-1]),'HandleVisibility','off')
@@ -80,17 +97,17 @@ ylabel('Temperature (K)')
 legend({'Body A','Interface','Body B'},'Location','SouthEast')
 
 pause(1)
-figured;
-axis([-LA LB Tinf1 Tinf2])
+figured(2);
+axis([-LA LB .95*Tinf1 1.05*Tinf2])
 xlabel('Length (m)')
 ylabel('Temperature (K)')
-for i = 1:length(t)
-    plot(xA,TAs(i,:),'b',xB,TBs(i,:),'r','LineWidth',1.5)
-    title(sprintf('Spatial profile in t = %2.1f h',t(i)))
-    drawnow;
-    pause(tf/frames/30)
-end
-
+opts = { {'LineWidth',1.5,'Color','b'}; 
+         {'Marker','*','LineStyle','none','Color','b'};
+         {'LineWidth',1.5,'Color','r'}; 
+         {'Marker','*','LineStyle','none','Color','r'} };
+    
+legopt = {'A: Interp','A: Col point','B: Interp','B: Col point','location','NorthOutside','Orientation','Horizontal'};
+sldplot({xAc xA xBc xB},{TAc TAs TBc TBs},opts,labels,legopt)
 
     % The model (discretization by orthogonal collocation)
     function res = model(~,y,yp)

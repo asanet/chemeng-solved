@@ -8,13 +8,15 @@ end
 
 set(f,'Units','normalized','PaperOrientation','landscape','PaperPositionMode','auto',...
                                         'Tag','main','Position',[0.3 0.25 0.4 0.5]); 
-axes('YGrid','on','Box','on','FontSize',16,'NextPlot','replacechildren');
+                                    
+axes('Parent',f,'YGrid','on','Box','on','FontSize',16,'NextPlot','replacechildren', ...
+            'Units','normalized');
 
 mh1 = uimenu('Parent',f,'Label','Additions');
 uimenu(mh1,'Label','Save2PDF','Enable','on','Tag','saveinpdf','Accelerator','B');
+
 h = guihandles(f);
 set(h.saveinpdf,'Callback',@save2pdfemb);
-
 
 guidata(f,h)
 end
@@ -26,6 +28,7 @@ h = guidata(ho);
 if FileName~=0
     save2pdflocal([PathName FileName],800,h.main)
 end
+
 end
 
 function save2pdflocal(pdfFileName,dpi,handle)
