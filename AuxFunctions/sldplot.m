@@ -22,6 +22,8 @@ function sldplot(xcell,ycell,opts,labels,legendopt)
 %   Author: ataide@peq.coppe.ufrj.br
 %   homepage: github.com/asanet
 %   Contact me for help/personal classes!
+%   Date: 2018-07-05
+%   Matlab version: R2018a
 
 
 if nargin <= 2
