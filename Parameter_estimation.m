@@ -9,10 +9,18 @@ function Parameter_estimation
 %% The problem
 %   
 %   Given a data set (xe,ye), find the parameters of a dynamical
-%   non linear model. By least squares hte problem is:
+%   non linear model. By least squares the problem is:
 %   
 %   minimize the sum of (ye_i - ycalc_i)^2
 %               
+%   About the process:
+%   CSTR with van de vusse reaction system
+%    A -> B
+%    B -> C
+%   2A -> D
+%   
+%   Estimate the Arrhenius pre-exponential factor and activation energies
+% 
 %   ============================================================
 %   Author: ataide@peq.coppe.ufrj.br
 %   homepage: github.com/asanet
@@ -57,7 +65,7 @@ parEst = fminsearch(@fobj,par0,op);
 % Calculate ycalc with the estimated parameters for comparison
 tspan = linspace(0,te(end),100)';
 [tc,yc] = ode15s(@model,tspan,y0,odeopt,parEst);
-[tc2,yc2] = ode15s(@model,te,y0,odeopt,parEst);
+[~,yc2] = ode15s(@model,te,y0,odeopt,parEst);
 
 % Plot data
 close all

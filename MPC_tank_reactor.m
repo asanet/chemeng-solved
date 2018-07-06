@@ -3,7 +3,7 @@ function MPC_tank_reactor
 %   
 %   You'll learn:
 %       +: how to solve optimization problems
-%       +: How to apply a model predictice control with non linear models
+%       +: How to apply a model predictive control with nonlinear models
 %   
 %% The problem
 %   
@@ -12,6 +12,12 @@ function MPC_tank_reactor
 %               lb <   u  < ub
 %                0 < |du| < du_max
 %               
+%   About the process:
+%   CSTR with van de vusse reaction system
+%    A -> B
+%    B -> C
+%   2A -> D
+%   
 %   ============================================================
 %   Author: ataide@peq.coppe.ufrj.br
 %   homepage: github.com/asanet
@@ -33,7 +39,7 @@ UA = 0.215*1120;    R = 8.3145;
 % The objective function parameters
 Hp = 1000;      % Prediction horizon
 nt = 50;        % Time sampling points
-P_sp = 1;       % Set point violetion penalty
+P_sp = 1;       % Set point violation penalty
 P_u = 1e6;      % Saturation penalty
 P_du = 1e6;     % Delta u penalty
 lb = 273.15;    % lower bound to u
@@ -60,7 +66,7 @@ ynow = [0 0 300]';
 % Simulation span
 tspan = 1:3*Hp;
 
-% The intial u profile (must have Hc values)
+% The initial u profile (must have Hc values)
 u = [373.15 0 0 0]';
 umi = u(1);
 
@@ -109,13 +115,13 @@ for i = 1:nsamples-1
     um(i+1) = u(1);
     umi = u(1);
     
-    % Disturbance in tal
+    % Disturbance in tau
     if i == fix(nsamples/2)
         Tf = 420;
     end
 end
 
-%% plot the data
+% Plot the data
 figure;
 subplot(211)
 h = plot(tm,ym(:,3),tm,spval*ones(nsamples,1),'LineWidth',1.5);
@@ -136,7 +142,7 @@ set(gca,'ygrid','on','xgrid','on','fontsize',16)
 
     function f = mpc_cost_function(u,ynow)
         
-        % Solve the model until the preditction horizon
+        % Solve the model until the prediction horizon
         ts1 = linspace(0,Hp,nt); 
         [t,y] = ode15s(@model,ts1,ynow,simulationOpt,u);
              
@@ -151,7 +157,7 @@ set(gca,'ygrid','on','xgrid','on','fontsize',16)
         % Delta u penalty
         f3 = -min(0, du_max - max(abs([umi- u(1); u(2:end)])));
         
-        % THe objective function
+        % The objective function
         f = P_sp*f1 + P_u*f2 + P_du*f3;
     end
 
@@ -159,18 +165,18 @@ set(gca,'ygrid','on','xgrid','on','fontsize',16)
         % Van de vusse reaction in a CSTR
         Ca = y(1);  Cb = y(2);  T = y(3);
         
-        % the regularization function
+        % The regularization function
         reg = 1/2 + tanh(p*(t - td))/2;
         
-        % control variable
+        % Control variable
         Tc = sum(u.*reg);
         
-        % reaction rates
+        % Reaction rates
         r1 = k1*exp(-E1/R/T)*Ca;
         r2 = k2*exp(-E2/R/T)*Cb;
         r3 = k3*exp(-E3/R/T)*Ca^2;
         
-        % mass balances
+        % Mass balances
         dCa = (Caf - Ca)/tau -r1 -2*r3;
         dCb = -Cb/tau + r1 - r2;
         dT  = (Tf - T)/tau -1/rho/cp*( UA/V*(T - Tc) + H1*r1 + H2*r2 +H3*r3 );

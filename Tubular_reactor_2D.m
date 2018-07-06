@@ -48,10 +48,10 @@ z = linspace(0,L,Nz)';
 % Operational parameters (play around)
 vmax = 1;
 vz = vmax*(1 - (r/R).^2);   % Velocity profile
-Dz = 0.5*0;                 % Diffusion coeficients
+Dz = 0.5*0;                 % Diffusion coefficients
 Dr = 0.01*0;
 k = 0.1*0;                  % Kinetic constant
-Cf = ones(Nr,1);            % Feed concetration
+Cf = ones(Nr,1);            % Feed concentration
 
 % The initial condition
 y0 = zeros(Nr*Nz,1);
@@ -100,7 +100,7 @@ caxis([0 1])
 xlabel('Length')
 ylabel('Diameter')
 hcb = colorbar;
-hcb.Label.String = 'Concetration';
+hcb.Label.String = 'Concentration';
 colormap jet
 for ii = 1:Nt
     imagesc(z,[2*r;2*r],[flip(Csol(:,:,ii));Csol(:,:,ii)])

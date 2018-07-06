@@ -29,7 +29,7 @@ ng = length(xg);
 % Allocation
 P = zeros(np,1);
 
-% Calculate the lagrange polinomial in x -> P(x)
+% Calculate the lagrange polynomial in x -> P(x)
 for j = 1:ng
     l = ones(np,1);
     for i = 1:ng

@@ -39,7 +39,7 @@ end
 end
 
 function save2pdflocal(pdfFileName,dpi,handle)
-% Addapted from (c) Gabe Hoffmann, gabe.hoffmann@gmail.com
+% Adapted from (c) Gabe Hoffmann, gabe.hoffmann@gmail.com
 
 % Backup previous settings
 prePaperType = get(handle,'PaperType');

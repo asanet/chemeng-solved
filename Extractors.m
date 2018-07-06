@@ -22,8 +22,8 @@ function Extractors
 %   N:  Number of Stages
 %   R:  Raffinate flow rate 
 %   E:  Extract flow rate  
-%   Xf: Molar fration feeding stage 1 at raffinate 
-%   Yf: Molar fration feeding stage N at extract 
+%   Xf: Molar fraction feeding stage 1 at raffinate 
+%   Yf: Molar fraction feeding stage N at extract 
 %   Ki: Equilibrium constants
 %
 %   Mass balance:
@@ -46,7 +46,7 @@ function Extractors
 %% Problem setup
 addpath('AuxFunctions')
 
-% Numer of stages
+% Number of stages
 N = 10;
 K = 0.25*ones(N,1);
 R = 1;

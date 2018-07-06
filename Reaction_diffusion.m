@@ -59,7 +59,7 @@ y0 = ones(n,1);
 opt = optimoptions(@fsolve,'TolFun',1e-10,'TolX',1e-10,'Display','iter-detailed',...
     'Algorithm','trust-region-reflective');
 
-% Passing the Sparty Pattern (Compare solution time with and without it)
+% Passing the Sparsity Pattern (Compare solution time with and without it)
 opt.JacobPattern = Jp;
 
 % Solver call

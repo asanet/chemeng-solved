@@ -18,7 +18,7 @@ function Steady_state_PFR
 %   C_i = P/(R*T)*F_i/Ft
 %   u*sum(C_i) = Ft
 % 
-%   Auxiliar equations
+%   Auxiliary equations
 %   cp*Ft = sum(F_i*cp_i)
 %   
 %   ============================================================
