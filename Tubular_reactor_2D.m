@@ -44,6 +44,7 @@ dr = R/(Nr-1);
 dz = L/(Nz-1);
 r = linspace(0,R,Nr)';
 z = linspace(0,L,Nz)';
+n = Nr*Nz;
 
 % Operational parameters (play around)
 vmax = 1;
@@ -54,42 +55,55 @@ k = 0.1*0;                  % Kinetic constant
 Cf = ones(Nr,1);            % Feed concentration
 
 % The initial condition
-y0 = zeros(Nr*Nz,1);
-yp0 = model(0,y0,zeros(Nr*Nz,1));
+y0 = zeros(n,1);
+zz = zeros(n,1);
+yp0 = model(0,y0,zz);
 
 % Auto generate the sparsity pattern (don't try to run without it if Nr > 30 and/or Nz > 30)
 % Try to build manually and compare with the auto-generated ;)
-Jp = zeros(Nr*Nz);
-yr = rand(Nr*Nz,1);
-zz = zeros(Nr*Nz,1);
+% 
+tic
+Jp = spalloc(n,n,3*n);
+yr = rand(n,1);
 delta = 1e-4;
-for ii = 1:Nr*Nz
-    per = zeros(Nr*Nz,1);
+per = zeros(n,1);
+for ii = 1:n
     per(ii) = 1;
     f0 = model(0,yr,zz);
     f1 = model(0,yr+per*delta,zz);
-    Jp(:,ii) = (f1 - f0)/delta ~= 0;
+    Jp(:,ii) = (f1 - f0)/delta ~= 0;  %#ok<SPRIX>
+    per(ii) = 0;
 end
 
-Jp = sparse(Jp);
-Jyp = speye(Nr*Nz);
+Jyp = speye(n);
+etime = toc;
+
+fprintf('Elapsed time building the sparsity pattern = %2.4f s\n',etime);
+
 
 % The solution
-tf = 25;
+tf = 20;
 frames = 2000;
 tspan = linspace(0,tf,frames);
 op = odeset('AbsTol',1e-6,'RelTol',1e-4,'JPattern',{Jp,Jyp});
 
 tic
 [t,y] = ode15i(@model,tspan,y0,yp0,op);
-toc
+etime = toc;
+
+fprintf('Elapsed time integrating the system = %2.4f s\n',etime);
+
 
 % Parse the solution matrix
+tic
 Nt = length(t);
 Csol = zeros(Nr,Nz,Nt);
 for ii = 1:Nt
     Csol(:,:,ii) = reshape(y(ii,:)',Nr,Nz);
 end
+etime = toc;
+
+fprintf('Elapsed time parsing the solution = %2.4f s\n',etime);
 
 % Plot the data (to stop the animation, press CTRL+C on command window)
 close all
@@ -137,7 +151,7 @@ end
         % In z = L and r = 2:Nr-1
         res(2:Nr-1,Nz) = C(2:Nr-1,Nz) - C(2:Nr-1,Nz-1);
         
-        res = reshape(res,Nr*Nz,1);
+        res = reshape(res,n,1);
 
     end
 
