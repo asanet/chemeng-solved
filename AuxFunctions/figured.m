@@ -13,8 +13,13 @@ function f = figured(varargin)
 
 f = figure(varargin{:});
 
-set(f,'Units','normalized','PaperOrientation','landscape','PaperPositionMode','auto',...
+if ~any(strcmpi(varargin,'position'))
+    set(f,'Units','normalized','PaperOrientation','landscape','PaperPositionMode','auto',...
                                         'Tag','main','Position',[0.3 0.25 0.4 0.5]); 
+else
+    set(f,'Units','normalized','PaperOrientation','landscape','PaperPositionMode','auto',...
+                                        'Tag','main');
+end
                                     
 axes('Parent',f,'YGrid','on','Box','on','FontSize',16,'NextPlot','replacechildren', ...
             'Units','normalized');
