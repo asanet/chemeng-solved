@@ -9,7 +9,7 @@ function Tubular_reactor_2D
 %% The problem
 % 
 %   Differential Equation:
-%   dC/dt = -d/dz( v_z - D_z*dC/dz ) + D_r/r*d/dr(r*dC/dr) - kC
+%   dC/dt = -d/dz( v_z*C - D_z*dC/dz ) + D_r/r*d/dr(r*dC/dr) - k*C
 %       
 %   With:
 %       C = C(t,r,z)
@@ -108,20 +108,62 @@ fprintf('Elapsed time parsing the solution = %2.4f s\n',etime);
 % Plot the data (to stop the animation, press CTRL+C on command window)
 close all
 
-figured;
-axis([0 L 0 2*R])
-caxis([0 1])
-xlabel('Length')
-ylabel('Diameter')
-hcb = colorbar;
-hcb.Label.String = 'Concentration';
-colormap jet
-for ii = 1:Nt
-    imagesc(z,[2*r;2*r],[flip(Csol(:,:,ii));Csol(:,:,ii)])
-    title(sprintf('Axial and radial profiles in t = %2.3f s',t(ii)))
-    drawnow;
-    pause(tf/frames/30)
-end
+% figured;
+% axis([0 L 0 2*R])
+% caxis([0 1])
+% xlabel('Length')
+% ylabel('Diameter')
+% hcb = colorbar;
+% hcb.Label.String = 'Concentration';
+% colormap jet
+% for ii = 1:Nt
+%     imagesc(z,[2*r;2*r],[flip(Csol(:,:,ii));Csol(:,:,ii)])
+%     title(sprintf('Axial and radial profiles in t = %2.3f s',t(ii)))
+%     drawnow;
+%     pause(tf/frames/30)
+% end
+
+%Perfis axiais no centro do reator, vários tempos
+figured(1);
+plot(z,Csol(1,:,1),'-b')
+hold on
+plot(z,Csol(1,:,round(0.10*Nt)),'-m')
+plot(z,Csol(1,:,round(0.25*Nt)),'-r')
+plot(z,Csol(1,:,round(0.50*Nt)),'-g')
+plot(z,Csol(1,:,round(0.75*Nt)),'-c')
+plot(z,Csol(1,:,Nt),'-k')
+xlabel('Comprimento axial')
+ylabel('Concentração')
+legend('Tempo inicial','10% Tempo final','25% Tempo final','50% Tempo final','75% Tempo final','Tempo final')
+title('Perfis axiais para o centro e instantes variados de tempo')
+
+%Perfis axiais no EE, vários raios
+figured(2);
+plot(z,Csol(1,:,Nt),'-b')
+hold on
+plot(z,Csol(round(0.10*Nr),:,Nt),'-m')
+plot(z,Csol(round(0.25*Nr),:,Nt),'-r')
+plot(z,Csol(round(0.50*Nr),:,Nt),'-g')
+plot(z,Csol(round(0.75*Nr),:,Nt),'-c')
+plot(z,Csol(Nr,:,Nt),'-k')
+xlabel('Comprimento axial')
+ylabel('Concentração')
+legend('Raio zero','10% Raio final','25% Raio final','50% Raio final','75% Raio final','Parede')
+title('Perfis axiais para o EE e posições variadas do raio')
+
+%Perfis radiais no EE, várias posições axiais
+figured(3);
+plot(r,Csol(:,1,Nt),'-b')
+hold on
+plot(r,Csol(:,round(0.10*Nz),Nt),'-m')
+plot(r,Csol(:,round(0.25*Nz),Nt),'-r')
+plot(r,Csol(:,round(0.50*Nz),Nt),'-g')
+plot(r,Csol(:,round(0.75*Nz),Nt),'-c')
+plot(r,Csol(:,Nz,Nt),'-k')
+xlabel('Comprimento radial')
+ylabel('Concentração')
+legend('Entrada','10% Saída','25% Saída','50% Saída','75% Saída','Saída')
+title('Perfis rais para o EE e posições variadas do comprimento')
 
 %% The model -> DAE formulation (boundary conditions incorporated in the model)
     function res = model(~,y,yp)
@@ -135,7 +177,7 @@ end
         for i = 2:Nr-1
             for j = 2:Nz-1
                 res(i,j) = -vz(i)*( C(i,j) - C(i,j-1) )/dz + Dz*( C(i,j+1) - 2*C(i,j) + C(i,j-1) )/dz^2 + ...
-                           Dr*( C(i,j) - C(i-1,j) )/2/dr/r(i) + Dr*( C(i+1,j) - 2*C(i,j) + C(i-1,j) )/dr^2  - k*C(i,j) - dC(i,j); 
+                           Dr*( C(i+1,j) - C(i-1,j) )/2/dr/r(i) + Dr*( C(i+1,j) - 2*C(i,j) + C(i-1,j) )/dr^2  - k*C(i,j) - dC(i,j); 
             end
         end
 
