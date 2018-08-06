@@ -189,7 +189,7 @@ set(gca,'ygrid','on','xgrid','on','fontsize',16)
     function dy = plant(t,y,u)
         % The virtual plant: in this case, we consider a perfect model,
         % that is, plant = model
-        dy = plant(t,y,u);
+        dy = model(t,y,u);
         
     end
 end
