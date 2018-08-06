@@ -161,7 +161,7 @@ set(gca,'ygrid','on','xgrid','on','fontsize',16)
         f = P_sp*f1 + P_u*f2 + P_du*f3;
     end
 
-    function dy = plant(t,y,u)
+    function dy = model(t,y,u)
         % Van de vusse reaction in a CSTR
         Ca = y(1);  Cb = y(2);  T = y(3);
         
@@ -186,7 +186,7 @@ set(gca,'ygrid','on','xgrid','on','fontsize',16)
 
     end
 
-    function dy = model(t,y,u)
+    function dy = plant(t,y,u)
         % The virtual plant: in this case, we consider a perfect model,
         % that is, plant = model
         dy = plant(t,y,u);
