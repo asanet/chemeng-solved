@@ -67,7 +67,7 @@ ynow = [0 0 300]';
 tspan = 1:3*Hp;
 
 % The initial u profile (must have Hc values)
-u = [373.15 0 0 0]';
+u = [298.15 0 0 0]';
 umi = u(1);
 
 % The solver configuration
@@ -162,7 +162,16 @@ set(gca,'ygrid','on','xgrid','on','fontsize',16)
     end
 
     function dy = model(t,y,u)
-        % Van de vusse reaction in a CSTR
+        % The model: in this case, we consider a perfect model,
+        % that is, model = plant
+        dy = plant(t,y,u);
+
+    end
+
+    function dy = plant(t,y,u)
+        % The virtual plant: Van de vusse reaction in a CSTR
+        
+        % The states
         Ca = y(1);  Cb = y(2);  T = y(3);
         
         % The regularization function
@@ -183,15 +192,7 @@ set(gca,'ygrid','on','xgrid','on','fontsize',16)
         
         % vector of derivatives
         dy = [dCa dCb dT]';
-
-    end
-
-    function dy = plant(t,y,u)
-        % The virtual plant: in this case, we consider a perfect model,
-        % that is, plant = model
-        dy = model(t,y,u);
         
     end
 end
-
 

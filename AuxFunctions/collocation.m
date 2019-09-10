@@ -8,8 +8,10 @@ function [A,B,xgrid] = collocation(n,var,extrax)
 %   VAR is a string with the independent variable. Ex: with VAR = 'x', we 
 %   are calculating the roots xi in [-1, 1] such as P(x) = 0.
 %   With VAR = '2*x-1', we are calculating the roots xi i [0, 1] such as 
-%   P(2x-1) = 0. EXTRAX is a 2-by-1 optional vector which pre-append and
-%   post-append xgrig by EXTRAX(1) and EXTRAX(2), respectively.
+%   P(2x-1) = 0.
+%   EXTRAX: '+val' to append val at the end
+%           '-val' to preappend val at the start
+%           2x1 array to both append and preappend
 % 
 %   Examples:See the Furnace_wall.m file.
 % 
@@ -49,11 +51,15 @@ LP = legendreP(n,var);
 xgrid = double(vpasolve(LP == 0));
 
 if ~isempty(extrax)
-    if length(extrax) ~= 2
-        error('extrax must have size two');
+    if strcmp(extrax(1),'+')
+        xgrid = [xgrid; str2double(extrax(2:end))];
+        n = n + 1;
+    elseif strcmp(extrax(1),'-')
+        xgrid = [str2double(extrax(2:end)); xgrid];
+        n = n + 1;
     else
         xgrid = [extrax(1); xgrid; extrax(2)];
-        n = n + 2;
+        n = n+2;
     end
 end
 

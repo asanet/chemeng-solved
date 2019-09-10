@@ -38,8 +38,8 @@ addpath('AuxFunctions')
 R = 0.1; L = 10;
 
 % Grid dimensions
-Nr = 100;
-Nz = 100;
+Nr = 150;
+Nz = 150;
 dr = R/(Nr-1);
 dz = L/(Nz-1);
 r = linspace(0,R,Nr)';
@@ -49,9 +49,9 @@ n = Nr*Nz;
 % Operational parameters (play around)
 vmax = 1;
 vz = vmax*(1 - (r/R).^2);   % Velocity profile
-Dz = 0.5*0;                 % Diffusion coefficients
-Dr = 0.01*0;
-k = 0.1*0;                  % Kinetic constant
+Dz = 0.00010;               % Diffusion coefficients
+Dr = 0.00001;
+k = 0.05;                   % Kinetic constant
 Cf = ones(Nr,1);            % Feed concentration
 
 % The initial condition
@@ -59,27 +59,24 @@ y0 = zeros(n,1);
 zz = zeros(n,1);
 yp0 = model(0,y0,zz);
 
-% Auto generate the sparsity pattern (don't try to run without it if Nr > 30 and/or Nz > 30)
-% Try to build manually and compare with the auto-generated ;)
-% 
+% Workaround to get the sparsity pattern automatically
 tic
-Jp = spalloc(n,n,3*n);
 yr = rand(n,1);
-delta = 1e-4;
 per = zeros(n,1);
+idx = false(n,n);
+f0 = model(0,yr,zz);
 for ii = 1:n
-    per(ii) = 1;
-    f0 = model(0,yr,zz);
-    f1 = model(0,yr+per*delta,zz);
-    Jp(:,ii) = (f1 - f0)/delta ~= 0;  %#ok<SPRIX>
+    per(ii) = 1e-6;
+    f1 = model(0,yr+per,zz);
+    idx(:,ii) = f1 ~= f0;
     per(ii) = 0;
 end
 
+Jp = sparse(idx);
 Jyp = speye(n);
 etime = toc;
 
-fprintf('Elapsed time building the sparsity pattern = %2.4f s\n',etime);
-
+fprintf('Elapsed time generating the sparsity pattern = %2.4f s\n',etime);
 
 % The solution
 tf = 20;
@@ -108,62 +105,21 @@ fprintf('Elapsed time parsing the solution = %2.4f s\n',etime);
 % Plot the data (to stop the animation, press CTRL+C on command window)
 close all
 
-% figured;
-% axis([0 L 0 2*R])
-% caxis([0 1])
-% xlabel('Length')
-% ylabel('Diameter')
-% hcb = colorbar;
-% hcb.Label.String = 'Concentration';
-% colormap jet
-% for ii = 1:Nt
-%     imagesc(z,[2*r;2*r],[flip(Csol(:,:,ii));Csol(:,:,ii)])
-%     title(sprintf('Axial and radial profiles in t = %2.3f s',t(ii)))
-%     drawnow;
-%     pause(tf/frames/30)
-% end
-
-%Perfis axiais no centro do reator, vários tempos
-figured(1);
-plot(z,Csol(1,:,1),'-b')
-hold on
-plot(z,Csol(1,:,round(0.10*Nt)),'-m')
-plot(z,Csol(1,:,round(0.25*Nt)),'-r')
-plot(z,Csol(1,:,round(0.50*Nt)),'-g')
-plot(z,Csol(1,:,round(0.75*Nt)),'-c')
-plot(z,Csol(1,:,Nt),'-k')
-xlabel('Comprimento axial')
-ylabel('Concentração')
-legend('Tempo inicial','10% Tempo final','25% Tempo final','50% Tempo final','75% Tempo final','Tempo final')
-title('Perfis axiais para o centro e instantes variados de tempo')
-
-%Perfis axiais no EE, vários raios
-figured(2);
-plot(z,Csol(1,:,Nt),'-b')
-hold on
-plot(z,Csol(round(0.10*Nr),:,Nt),'-m')
-plot(z,Csol(round(0.25*Nr),:,Nt),'-r')
-plot(z,Csol(round(0.50*Nr),:,Nt),'-g')
-plot(z,Csol(round(0.75*Nr),:,Nt),'-c')
-plot(z,Csol(Nr,:,Nt),'-k')
-xlabel('Comprimento axial')
-ylabel('Concentração')
-legend('Raio zero','10% Raio final','25% Raio final','50% Raio final','75% Raio final','Parede')
-title('Perfis axiais para o EE e posições variadas do raio')
-
-%Perfis radiais no EE, várias posições axiais
-figured(3);
-plot(r,Csol(:,1,Nt),'-b')
-hold on
-plot(r,Csol(:,round(0.10*Nz),Nt),'-m')
-plot(r,Csol(:,round(0.25*Nz),Nt),'-r')
-plot(r,Csol(:,round(0.50*Nz),Nt),'-g')
-plot(r,Csol(:,round(0.75*Nz),Nt),'-c')
-plot(r,Csol(:,Nz,Nt),'-k')
-xlabel('Comprimento radial')
-ylabel('Concentração')
-legend('Entrada','10% Saída','25% Saída','50% Saída','75% Saída','Saída')
-title('Perfis rais para o EE e posições variadas do comprimento')
+figured;
+axis([0 L 0 2*R])
+caxis([0 1])
+xlabel('Length')
+ylabel('Radius')
+set(gca,'YTickLabel',[0.1, 0.05, 0, 0.05, 0.1])
+hcb = colorbar;
+hcb.Label.String = 'Concentration';
+colormap jet
+for ii = 1:Nt
+    imagesc(z,[2*r;2*r],[flip(Csol(:,:,ii));Csol(:,:,ii)])
+    title(sprintf('Axial and radial profiles in t = %2.3f s',t(ii)))
+    drawnow;
+    pause(tf/frames/30)
+end
 
 %% The model -> DAE formulation (boundary conditions incorporated in the model)
     function res = model(~,y,yp)
